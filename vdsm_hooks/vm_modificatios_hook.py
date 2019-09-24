@@ -12,7 +12,9 @@ import traceback
 import hooking
 
 vm_list = ["test", "WindowsRocks"]
+black_list = ["hostedengine"]
 ENABLE_ALL = False
+
 try:
     domxml = hooking.read_domxml()
     name = domxml.getElementsByTagName("name")[0].firstChild.nodeValue
@@ -21,7 +23,7 @@ try:
     for disk in disks:
         if disk.getAttribute('device') == 'disk':
             disk.removeAttribute('snapshot')
-            if ENABLE_ALL or name.lower() in [vm.lower() for vm in vm_list]:
+            if name.lower() not in black_list and (ENABLE_ALL or name.lower() in [vm.lower() for vm in vm_list]):
                 driver = disk.getElementsByTagName('driver')[0]
                 driver.setAttribute('cache', 'writeback')
     hooking.write_domxml(domxml)
